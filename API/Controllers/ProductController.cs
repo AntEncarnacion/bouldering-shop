@@ -7,10 +7,12 @@ using API.Data;
 namespace API.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class ProductController : ControllerBase
 {
         private readonly StoreContext _context;
+
+        // Dependency Injection constructor
         public ProductController(StoreContext context)
         {
                 _context = context;
@@ -29,12 +31,24 @@ public class ProductController : ControllerBase
                 return products;
         }
 
-        // GET by Id action
+        // GET all action with filter parameters
+
+        // GET by ID action
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Product>> Get(int id)
+        {
+                var product = await _context.Products
+                        .FindAsync(id);
+
+                if (product == null) return NotFound();
+                
+                return product;
+        }
 
         // POST action
-        // TODO: [Authorize(Roles = "Admin")]
+        // Received by a form
         [HttpPost]
-        public async Task<ActionResult<Product>> Create([Bind("Name", "Quantity")] Product product)
+        public async Task<ActionResult<Product>> Post([Bind("Name", "Quantity")] Product product)
         {
                 _context.Add(product);
                 var result = await _context.SaveChangesAsync() > 0;
@@ -45,6 +59,37 @@ public class ProductController : ControllerBase
         }
 
         // PUT action
+        [HttpPut]
+        public async Task<ActionResult<Product>> Put([FromForm] Product product)
+        {
+                _context.Products.Update(product);
+
+                var result = await _context.SaveChangesAsync() > 0;
+
+                if (result) return Ok(product);
+
+                return BadRequest(new ProblemDetails { Title = "Problem updating product" });
+        }
 
         // DELETE action
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Product>> Delete(int id)
+        {
+                var product = await _context.Products.FindAsync(id);
+
+                if (product == null) return NotFound();
+
+                _context.Products.Remove(product);
+
+                var result = await _context.SaveChangesAsync() > 0;
+
+                if (result) return Ok(product);
+
+                return BadRequest(new ProblemDetails { Title = "Problem remove product" });
+        }
 }
+
+// TODO: Authentication for POST, PUT, and DELETE
+// TODO: Pagination for results
+// TODO: DTO to Domain Entity mapping
+// TODO: Add logging 
