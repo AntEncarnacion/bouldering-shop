@@ -23,7 +23,7 @@ Bouldering Shop Web Page is a fictional web application designed to showcase the
 
 ## Technologies Used
 
-- **TODO**
+- TODO
 
 ## Getting Started
 
@@ -33,4 +33,4 @@ To run this project locally, follow these steps:
 
    ```shell
    git clone https://github.com/your-username/bouldering-shop-webpage.git
-2. **TODO**
+2. TODO
